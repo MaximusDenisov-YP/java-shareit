@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException exc) {
-        log.info(exc.getMessage(), exc);
+        log.warn(exc.getMessage(), exc);
         return new ResponseEntity<>(
                 new ErrorResponse(
                         HttpStatus.NOT_FOUND.value(),
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(ValidationException exc) {
-        log.info(exc.getMessage(), exc);
+        log.warn(exc.getMessage(), exc);
         return new ResponseEntity<>(
                 new ErrorResponse(
                         HttpStatus.BAD_REQUEST.value(),
@@ -66,6 +66,17 @@ public class GlobalExceptionHandler {
                         HttpStatus.CONFLICT.value(),
                         exc.getMessage()),
                 HttpStatus.CONFLICT
+        );
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleUnknownException(Exception exc) {
+        log.warn(exc.getMessage(), exc);
+        return new ResponseEntity<>(
+                new ErrorResponse(
+                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        exc.getMessage()),
+                HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
 }

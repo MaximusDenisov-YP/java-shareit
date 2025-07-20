@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.entity.Item;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -20,32 +21,41 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
 
     @Override
-    public List<Item> getAllUsersItems(Long userId) {
-        return itemRepository.getAllUsersItems(userId);
+    public List<ItemDto> getAllUsersItems(Long userId) {
+        return itemRepository.getAllUsersItems(userId)
+                .stream()
+                .map(ItemMapper::entityItemToDto)
+                .toList();
     }
 
     @Override
-    public Item getItemById(Long itemId, Long userId) {
-        return itemRepository.getItemById(itemId)
+    public ItemDto getItemById(Long itemId, Long userId) {
+        Item itemEntity = itemRepository.getItemById(itemId)
                 .orElseThrow(() -> new NotFoundException("Вещь с данным ID не найдена!"));
+        return ItemMapper.entityItemToDto(itemEntity);
     }
 
     @Override
-    public List<Item> getSearchingItemsByText(String text) {
+    public List<ItemDto> getSearchingItemsByText(String text) {
         if (text.isEmpty()) return new ArrayList<>();
-        return itemRepository.getSearchingItemsByText(text);
+        return itemRepository.getSearchingItemsByText(text)
+                .stream()
+                .map(ItemMapper::entityItemToDto)
+                .toList();
     }
 
     @Override
-    public Item createItem(ItemDto itemDto, Long userId) {
+    public ItemDto createItem(ItemDto itemDto, Long userId) {
         hasUser(userId);
-        return itemRepository.createItem(itemDto, userId);
+        Item itemEntity = itemRepository.createItem(itemDto, userId);
+        return ItemMapper.entityItemToDto(itemEntity);
     }
 
     @Override
-    public Item updateItem(ItemDto itemDto, Long itemId, Long userId) {
+    public ItemDto updateItem(ItemDto itemDto, Long itemId, Long userId) {
         hasUser(userId);
-        return itemRepository.updateItem(itemDto, itemId, userId);
+        Item itemEntity = itemRepository.updateItem(itemDto, itemId, userId);
+        return ItemMapper.entityItemToDto(itemEntity);
     }
 
     @Override

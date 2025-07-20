@@ -30,9 +30,10 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public List<Item> getSearchingItemsByText(String text) {
+        String searchingText = text.toLowerCase();
         return items.values().stream()
-                .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())
-                        || item.getDescription().toLowerCase().contains(text.toLowerCase()))
+                .filter(item -> item.getName().toLowerCase().contains(searchingText)
+                        || item.getDescription().toLowerCase().contains(searchingText))
                 .filter(Item::getAvailable)
                 .toList();
     }

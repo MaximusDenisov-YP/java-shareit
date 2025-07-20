@@ -8,6 +8,7 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.entity.User;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
@@ -19,28 +20,32 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.getAllUsers();
+    public List<UserDto> getAllUsers() {
+        return userRepository.getAllUsers()
+                .stream()
+                .map(UserMapper::entityUserToDto)
+                .toList();
     }
 
     @Override
-    public User getUserById(long userId) {
-        return userRepository.getUserById(userId)
+    public UserDto getUserById(long userId) {
+        User userEntity = userRepository.getUserById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с ID %d - не существует!".formatted(userId)));
+        return UserMapper.entityUserToDto(userEntity);
     }
 
     @Override
-    public User createUser(UserDto userDto) {
+    public UserDto createUser(UserDto userDto) {
         if (userDto.getEmail() == null)
             throw new ValidationException("Email не должен быть пуст!");
         emailValidate(userDto);
-        return userRepository.createUser(userDto);
+        return UserMapper.entityUserToDto(userRepository.createUser(userDto));
     }
 
     @Override
-    public User updateUser(UserDto userDto, Long userId) {
+    public UserDto updateUser(UserDto userDto, Long userId) {
         emailValidate(userDto);
-        return userRepository.updateUser(userDto, userId);
+        return UserMapper.entityUserToDto(userRepository.updateUser(userDto, userId));
     }
 
     @Override
