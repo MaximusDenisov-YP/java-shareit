@@ -1,10 +1,12 @@
-package ru.practicum.shareit.booking.dto;
+package ru.practicum.shareit.booking.entity;
 
-import ru.practicum.shareit.booking.entity.BookingStatus;
+import lombok.Data;
 
 import java.util.Date;
 
-public class BookingDto {
+@Data
+public class Booking {
+    private Long id;
     private Date start;
     private Date end;
     private Long itemId;
