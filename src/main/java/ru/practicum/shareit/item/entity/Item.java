@@ -1,16 +1,23 @@
 package ru.practicum.shareit.item.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 @Data
 @Builder
+@AllArgsConstructor
+@Entity
+@Table(name = "items")
 public class Item {
     @Positive
-    @NotNull
+    @Id
     private Long id;
     @Positive
     @NotNull
@@ -23,4 +30,7 @@ public class Item {
     private String description;
     @NotNull
     private Boolean available;
+
+    public Item() {
+    }
 }

@@ -1,25 +1,26 @@
 package ru.practicum.shareit.user.mapper;
 
-import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.entity.User;
 
-@UtilityClass
-public class UserMapper {
+import java.util.function.Function;
 
-    public static UserDto entityUserToDto(User user) {
-        return UserDto.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .build();
+public class UserMapper implements Function<User, UserDto> {
+
+    @Override
+    public UserDto apply(User user) {
+        return new UserDto(user.getId(), user.getName(), user.getEmail());
     }
 
-    public static User dtoToEntityItem(UserDto userDto, long userId) {
+    public static UserDto toDto(User user) {
+        return new UserMapper().apply(user);
+    }
+
+    public static User toEntity(UserDto dto) {
         return User.builder()
-                .id(userId)
-                .name(userDto.getName())
-                .email(userDto.getEmail())
+                .id(dto.getId())
+                .name(dto.getName())
+                .email(dto.getEmail())
                 .build();
     }
 }
