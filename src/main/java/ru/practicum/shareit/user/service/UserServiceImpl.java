@@ -49,8 +49,14 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(UserDto userDto, long userId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Пользователь с таким ID %s - не существует!".formatted(userId)));
+        String userDtoEmail = userDto.getEmail();
+        if (userDtoEmail != null) {
+            if (userRepository.existsUserByEmail(userDtoEmail)) {
+                throw new ConflictException("Пользователь с таким email %s - уже существует!".formatted(userDtoEmail));
+            }
+            user.setEmail(userDto.getEmail());
+        }
         if (userDto.getName() != null) user.setName(userDto.getName());
-        if (userDto.getEmail() != null) user.setEmail(userDto.getEmail());
         return UserMapper.toDto(userRepository.save(user));
     }
 

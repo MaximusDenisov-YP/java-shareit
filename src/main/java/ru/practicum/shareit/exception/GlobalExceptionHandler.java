@@ -79,4 +79,15 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
+
+    @ExceptionHandler(NotAvailableException.class)
+    public ResponseEntity<ErrorResponse> handleNotAvailableException(NotAvailableException exc) {
+        log.warn(exc.getMessage(), exc);
+        return new ResponseEntity<>(
+                new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        exc.getMessage()),
+                HttpStatus.BAD_REQUEST
+        );
+    }
 }

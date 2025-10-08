@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -15,18 +16,29 @@ public class BookingController {
     private final BookingService bookingService;
 
     @GetMapping
-    public List<BookingDto> getAllBooking() {
-        return bookingService.getAllBooking();
+    public List<BookingDto> getAllUserBookings(@RequestHeader(name = "X-Sharer-User-Id") Long userId) {
+        return bookingService.getAllBookingsByUserId(userId);
     }
 
+    @GetMapping("/{bookingId}")
+    public BookingDto getBookingById(
+            @PathVariable Long bookingId,
+            @RequestHeader(name = "X-Sharer-User-Id") Long userId) {
+        return bookingService.getBookingById(bookingId, userId);
+    }
     @PostMapping
-    public BookingDto createNewBooking(@Valid @RequestBody BookingDto bookingDto) {
-        return bookingService.createBooking(bookingDto);
+    public BookingDto createNewBooking(
+            @Valid @RequestBody BookingDto bookingDto,
+            @Valid @Positive @RequestHeader("X-Sharer-User-Id") Long userId) {
+        return bookingService.createBooking(bookingDto, userId);
     }
 
-    @PutMapping
-    public BookingDto updateBooking(@RequestBody BookingDto bookingDto) {
-        return bookingService.updateBooking(bookingDto);
+    @PutMapping("/{bookingId}")
+    public BookingDto updateBooking(
+            @PathVariable Long bookingId,
+            @RequestParam Boolean isApproved,
+            @RequestHeader(name = "X-Sharer-User-Id") Long userId) {
+        return bookingService.updateBooking(bookingId, isApproved, userId);
     }
 
     @DeleteMapping("/{bookingId}")
