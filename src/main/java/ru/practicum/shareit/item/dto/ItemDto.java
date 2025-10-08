@@ -9,14 +9,10 @@ import org.hibernate.validator.constraints.Length;
 @Data
 @Builder
 public class ItemDto {
-    @Positive
     private Long id;
     @Length(min = 5, max = 30)
-    @NotNull
     private String name;
     @Length(min = 1, max = 500)
-    @NotNull
     private String description;
-    @NotNull
     private Boolean available;
 }

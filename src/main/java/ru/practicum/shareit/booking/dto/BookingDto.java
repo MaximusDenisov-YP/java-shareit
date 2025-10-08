@@ -1,13 +1,16 @@
 package ru.practicum.shareit.booking.dto;
 
-import ru.practicum.shareit.booking.entity.BookingStatus;
+import lombok.*;
 
 import java.util.Date;
 
+@AllArgsConstructor
+@Builder
+@Getter
+@Setter
+@ToString
 public class BookingDto {
-    private Date start;
-    private Date end;
+    private String start;
+    private String end;
     private Long itemId;
-    private Long bookerId; // userId?
-    private BookingStatus status;
 }

@@ -7,11 +7,11 @@ import java.util.List;
 public interface BookingService {
     List<BookingDto> getAllBooking();
 
-    BookingDto getBookingById();
+    BookingDto getBookingById(Long bookingId);
 
-    BookingDto createBooking(BookingDto bookingDto);
+    BookingDto createBooking(BookingDto bookingDto, Long userId);
 
-    BookingDto updateBooking(BookingDto bookingDto);
+    BookingDto updateBooking(Long bookingId, Boolean isApproved, Long userId);
 
     void deleteBooking(Long bookingId);
 }

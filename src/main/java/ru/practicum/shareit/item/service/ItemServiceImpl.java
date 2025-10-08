@@ -38,7 +38,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getSearchingItemsByText(String text) {
         if (text.isEmpty()) return new ArrayList<>();
-        return itemRepository.findItemsByName(text).stream()
+        return itemRepository.findItemsByNameIgnoreCase(text).stream()
+                .filter(Item::getAvailable)
                 .map(ItemMapper::entityItemToDto)
                 .toList();
     }
@@ -47,8 +48,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public ItemDto createItem(ItemDto itemDto, Long userId) {
         if (userRepository.existsById(userId)) {
-            return ItemMapper.entityItemToDto(
-                    itemRepository.save(ItemMapper.dtoToEntityItem(itemDto, itemDto.getId(), userId)));
+            return ItemMapper.entityItemToDto(itemRepository.save(ItemMapper.dtoToEntityItem(itemDto, userId)));
         } else {
             throw new NotFoundException("Пользователя с ID %d - не существует!".formatted(userId));
         }
@@ -57,14 +57,23 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public ItemDto updateItem(ItemDto itemDto, Long itemId, Long userId) {
-        Item item = itemRepository.findById(itemId).orElseThrow(
+        Item item = itemRepository.findItemByIdAndOwnerId(itemId, userId).orElseThrow(
                 () -> new NotFoundException("Вещи с ID %d - не существует!".formatted(itemId)));
-        if (itemDto.getName() != null) {
-            item.setName(item.getName());
+        log.info("Найден Item для update -> {}", item);
+
+        String nameDto = itemDto.getName();
+        if (nameDto != null) {
+            item.setName(nameDto);
         }
-        if (itemDto.getDescription() != null) {
-            item.setDescription(item.getDescription());
+        String descriptionDto = itemDto.getDescription();
+        if (descriptionDto != null) {
+            item.setDescription(descriptionDto);
         }
+        Boolean available = itemDto.getAvailable();
+        if (available != null) {
+            item.setAvailable(available);
+        }
+
         return ItemMapper.entityItemToDto(itemRepository.save(item));
     }
 

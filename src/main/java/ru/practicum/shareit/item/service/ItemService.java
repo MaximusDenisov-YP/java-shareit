@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.service;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.entity.Item;
 
 import java.util.List;
 
