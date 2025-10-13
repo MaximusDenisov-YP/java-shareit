@@ -2,24 +2,21 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -41,7 +38,7 @@ public class BookingServiceImpl implements BookingService {
         //TODO: Отдавать Booking вместе с object item and user {user.id}
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(
                 () -> new NotFoundException(String.format("Бронирование с ID = %d, не найдено!", bookingId)));
-        if (userId.equals(booking.getBookerId()) || userId.equals(booking.getItem().getOwnerId())) {
+        if (userId.equals(booking.getBooker().getId()) || userId.equals(booking.getItem().getOwnerId())) {
             return BookingMapper.toDto(booking);
         } else {
             throw new NotAvailableException(
@@ -50,16 +47,21 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto createBooking(BookingDto bookingDto, Long userId) {
+    public BookingDto createBooking(BookingCreateDto bookingDto, Long userId) {
         // TODO: Дописать логику, где бизнес-ошибка с start, end.
         if (userRepository.existsById(userId)) {
-            Item item = itemRepository.findById(bookingDto.getItem().getId()).orElseThrow(
-                    () -> new NotFoundException(String.format("Предмет с ID = %d, не найден!", bookingDto.getItem().getId())));
+            Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(
+                    () -> new NotFoundException(String.format("Предмет с ID = %d, не найден!", bookingDto.getItemId())));
             if (item.getAvailable()) {
                 Booking booking = BookingMapper.toEntity(bookingDto);
-                booking.setBookerId(userId);
+                User booker = new User();
+                booker.setId(userId);
+                booking.setBooker(booker);
+                booking.setItem(item);
                 booking.setStatus(BookingStatus.WAITING);
-                return BookingMapper.toDto(bookingRepository.save(booking));
+                var result = BookingMapper.toDto(bookingRepository.save(booking));
+                log.info("Бронирование создано! {}", result);
+                return result;
             } else {
                 throw new NotAvailableException("Предмет недоступен для бронирования!");
             }
@@ -70,17 +72,19 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto updateBooking(Long bookingId, Boolean isApproved, Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException(String.format("Пользователь с ID = %d, не существует!", userId));
-        }
-        Booking booking = bookingRepository.findBookingByIdAndBookerId(bookingId, userId)
+        Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("Бронирование с ID = %d, не найдено!", bookingId)));
-        if (isApproved) {
-            booking.setStatus(BookingStatus.APPROVED);
+        if (booking.getItem().getOwnerId().equals(userId)) {
+            if (isApproved) {
+                booking.setStatus(BookingStatus.APPROVED);
+            } else {
+                booking.setStatus(BookingStatus.REJECTED);
+            }
+            return BookingMapper.toDto(bookingRepository.save(booking));
         } else {
-            booking.setStatus(BookingStatus.REJECTED);
+            throw new NotAvailableException(
+                    String.format("У ID = %d доступа к подтверждению данного бронирования!", userId));
         }
-        return BookingMapper.toDto(bookingRepository.save(booking));
     }
 
     @Override

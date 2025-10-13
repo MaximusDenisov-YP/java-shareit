@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
 
@@ -22,23 +23,24 @@ public class BookingController {
 
     @GetMapping("/{bookingId}")
     public BookingDto getBookingById(
-            @PathVariable Long bookingId,
+            @Valid @Positive @PathVariable Long bookingId,
             @RequestHeader(name = "X-Sharer-User-Id") Long userId) {
         return bookingService.getBookingById(bookingId, userId);
     }
+
     @PostMapping
     public BookingDto createNewBooking(
-            @Valid @RequestBody BookingDto bookingDto,
+            @Valid @RequestBody BookingCreateDto bookingDto,
             @Valid @Positive @RequestHeader("X-Sharer-User-Id") Long userId) {
         return bookingService.createBooking(bookingDto, userId);
     }
 
-    @PutMapping("/{bookingId}")
+    @PatchMapping("/{bookingId}")
     public BookingDto updateBooking(
             @PathVariable Long bookingId,
-            @RequestParam Boolean isApproved,
+            @RequestParam Boolean approved,
             @RequestHeader(name = "X-Sharer-User-Id") Long userId) {
-        return bookingService.updateBooking(bookingId, isApproved, userId);
+        return bookingService.updateBooking(bookingId, approved, userId);
     }
 
     @DeleteMapping("/{bookingId}")

@@ -5,8 +5,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
+import ru.practicum.shareit.comment.entity.Comment;
 
-@Getter @Setter
+import java.util.List;
+
+@Getter
+@Setter
 @ToString
 @Builder
 @AllArgsConstructor
@@ -27,6 +31,8 @@ public class Item {
     private String description;
     @NotNull
     private Boolean available;
+    @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
+    private List<Comment> comments;
 
     public Item() {
     }

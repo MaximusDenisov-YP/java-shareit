@@ -3,14 +3,14 @@ package ru.practicum.shareit.booking.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.springframework.cglib.core.Local;
 import ru.practicum.shareit.item.entity.Item;
+import ru.practicum.shareit.user.entity.User;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
-@Getter @Setter @ToString
+@Getter
+@Setter
+@ToString
 @Builder
 @AllArgsConstructor
 @Entity
@@ -25,12 +25,13 @@ public class Booking {
     @Column(name = "end_date")
     private LocalDateTime end;
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id")
     private Item item;
     @NotNull
-    @Column(name = "booker_id")
-    private Long bookerId; // userId?
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "booker_id")
+    private User booker; // userId?
     private BookingStatus status;
 
     public Booking() {
