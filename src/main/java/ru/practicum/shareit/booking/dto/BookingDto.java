@@ -7,12 +7,12 @@ import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.user.entity.User;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Getter
 @Setter
 @ToString
 public class BookingDto {
-    // TODO: !!! СРОЧНО СДЕЛАТЬ ДВА DTO, один на вход с Long itemId, а второй отдающий на контроллер с Item item - где он object с полями!!!
     @NotNull
     private Long id;
     @NotNull
@@ -24,4 +24,20 @@ public class BookingDto {
     @NotNull
     private BookingStatus status;
     private User booker;
+
+    public String getStart() {
+        return this.start;
+    }
+
+    public void setStart(String start) {
+        this.start = start;
+    }
+
+    public String getEnd() {
+        return end;
+    }
+
+    public void setEnd(String end) {
+        this.end = end;
+    }
 }

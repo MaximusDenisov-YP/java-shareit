@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.user.entity.User;
@@ -13,6 +12,7 @@ import java.time.LocalDateTime;
 @ToString
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "booking")
 public class Booking {
@@ -24,16 +24,27 @@ public class Booking {
     private LocalDateTime start;
     @Column(name = "end_date")
     private LocalDateTime end;
-    @NotNull
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id")
     private Item item;
-    @NotNull
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "booker_id")
     private User booker; // userId?
     private BookingStatus status;
 
-    public Booking() {
+    public LocalDateTime getStart() {
+        return this.start;
+    }
+
+    public void setStart(LocalDateTime start) {
+        this.start = start;
+    }
+
+    public LocalDateTime getEnd() {
+        return end;
+    }
+
+    public void setEnd(LocalDateTime end) {
+        this.end = end;
     }
 }

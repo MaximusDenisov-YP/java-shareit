@@ -1,9 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import ru.practicum.shareit.comment.dto.CommentDto;
 
@@ -12,6 +9,8 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ItemDto {
     private Long id;
