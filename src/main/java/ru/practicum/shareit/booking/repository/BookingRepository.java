@@ -1,17 +1,22 @@
 package ru.practicum.shareit.booking.repository;
 
-import ru.practicum.shareit.booking.dto.BookingDto;
+import org.springframework.data.jpa.repository.JpaRepository;
+import ru.practicum.shareit.booking.entity.Booking;
+import ru.practicum.shareit.booking.entity.BookingStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
-public interface BookingRepository {
-    List<BookingDto> getAllBooking();
+public interface BookingRepository extends JpaRepository<Booking, Long> {
+    List<Booking> findBookingsByBookerId(Long userId);
 
-    BookingDto getBookingById();
+    Optional<Booking> findBookingByItemIdAndBookerId(Long itemId, Long bookerId);
 
-    BookingDto createBooking();
+    Optional<Booking> findFirstByItemIdAndStartBeforeAndStatusOrderByEndDesc(
+            Long itemId, LocalDateTime now, BookingStatus status);
 
-    BookingDto updateBooking();
-
-    void deleteBooking();
+    // Следующее бронирование, которое начнётся после текущего момента
+    Optional<Booking> findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(
+            Long itemId, LocalDateTime now, BookingStatus status);
 }

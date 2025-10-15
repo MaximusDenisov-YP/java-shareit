@@ -1,18 +1,20 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 import ru.practicum.shareit.comment.dto.CommentDto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class ItemDto {
+public class ItemDtoWithDate {
     private Long id;
     @Length(min = 5, max = 30)
     private String name;
@@ -20,4 +22,6 @@ public class ItemDto {
     private String description;
     private Boolean available;
     private List<CommentDto> comments;
+    private LocalDateTime lastBooking;
+    private LocalDateTime nextBooking;
 }
