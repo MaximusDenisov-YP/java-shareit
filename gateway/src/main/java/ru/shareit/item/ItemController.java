@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.shareit.item.dto.CommentDto;
 import ru.shareit.item.dto.ItemDto;
 
+import java.util.Collections;
+
 @Validated
 @Controller
 @RequestMapping("/items")
@@ -48,6 +50,9 @@ public class ItemController {
 
     @GetMapping("/search")
     public ResponseEntity<Object> searchByText(@RequestParam String text) {
+        if (text == null || text.isBlank()) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
         return itemClient.searchByText(text);
     }
 
